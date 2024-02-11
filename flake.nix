@@ -75,7 +75,7 @@
 
           buildPhase = ''
             mkdir build
-            cmake -GNinja -DCMAKE_BUILD_TYPE=Release -S . -B build
+            cmake -GNinja -DCMAKE_BUILD_TYPE=Release -S $src -B build
             cmake --build build
           '';
 
