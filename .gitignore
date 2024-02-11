@@ -4,3 +4,4 @@
 compile_commands.json
 /.pre-commit-config.yaml
 .DS_Store
+/.direnv

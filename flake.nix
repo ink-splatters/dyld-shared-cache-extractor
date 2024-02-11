@@ -31,7 +31,7 @@
 
         checks = {
           pre-commit-check = pre-commit-hooks.lib.${system}.run {
-            src = ../.;
+            src = ./.;
             hooks = {
               # clang-format.enable = true;
               # clang-tidy.enable = true;
@@ -56,7 +56,7 @@
 
         devShells.default = mkShell.override { inherit stdenv; } {
 
-          inherit (self.packages.${system}.defaut) CFLAGS nativeBuildInputs;
+          inherit (self.packages.${system}.default) CFLAGS nativeBuildInputs;
 
           shellHook = self.checks.${system}.pre-commit-check.shellHook + ''
             export PS1="\n\[\033[01;36m\]‹ 𐲚YⲖ𐲚 𐑕ꡘ𐒰ᚱ⼹𐲚 ꓚ𐒰ꓚꡘE 📤 \\$ \[\033[00m\]"
