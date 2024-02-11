@@ -24,6 +24,9 @@
     flake-utils.lib.eachDefaultSystem (system:
       let
         pkgs = nixpkgs.legacyPackages.${system};
+        inherit (pkgs) llvmPackages mkShell lib;
+        inherit (llvmPackages) stdenv;
+
       in {
 
         checks = {
@@ -50,28 +53,43 @@
         };
 
         formatter = pkgs.nixfmt;
+
+        devShells.default = mkShell.override { inherit stdenv; } {
+
+          inherit (self.packages.${system}.defaut) CFLAGS nativeBuildInputs;
+
+          shellHook = self.checks.${system}.pre-commit-check.shellHook + ''
+            export PS1="\n\[\033[01;36m\]‹ 𐲚YⲖ𐲚 𐑕ꡘ𐒰ᚱ⼹𐲚 ꓚ𐒰ꓚꡘE 📤 \\$ \[\033[00m\]"
+            echo -e "\nto install pre-commit hooks:\n\x1b[1;37mnix develop .#install-hooks\x1b[00m"
+          '';
+        };
+
+        install-hooks = mkShell {
+          inherit (self.checks.${system}.pre-commit-check) shellHook;
+        };
+
+        packages.default = stdenv.mkDerivation {
+
+          CFLAGS = "-O3" + lib.optionalString ("${system}" == "aarch64-darwin")
+            " -mcpu=apple-m1";
+
+          src = ./.;
+
+          nativeBuildInputs = with pkgs; [ cmake ninja ];
+
+          buildPhase = ''
+            mkdir build
+            cmake -GNinja -DCMAKE_BUILD_TYPE=Release -S . -B build
+            cmake --build build
+          '';
+
+          installPhase = ''
+            mkdir -p $out
+            cmake --install build --prefix=$out
+          '';
+
+          enableParallelBuilding = true;
+
+        };
       });
 }
-      
-
-#         devShells = {
-#           let inherit (pkgs) llvmPackages mkShell;
-# in {
-
-#   default = mkShell.override { inherit (llvmPackages) stdenv; } {
-
-#     inherit (common) name CFLAGS CXXFLAGS LDFLAGS nativeBuildInputs buildInputs;
-
-#     shellHook = ''
-#       export PS1="\n\[\033[01;36m\]‹⊂˖˖› \\$ \[\033[00m\]"
-#       echo -e "\nto install pre-commit hooks:\n\x1b[1;37mnix develop .#install-hooks\x1b[00m"
-#     '';
-#   };
-
-#   install-hooks =
-#     mkShell { inherit (self.checks.${system}.pre-commit-check) shellHook; };
-#   };
-
-#         packages = import ./nix/packages.nix { inherit pkgs common; };
-#       });
-# }
