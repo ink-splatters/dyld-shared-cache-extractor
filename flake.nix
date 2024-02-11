@@ -33,8 +33,8 @@
           pre-commit-check = pre-commit-hooks.lib.${system}.run {
             src = ./.;
             hooks = {
-              # clang-format.enable = true;
-              # clang-tidy.enable = true;
+              clang-format.enable = true;
+              clang-tidy.enable = true;
               deadnix.enable = true;
               markdownlint.enable = true;
               nil.enable = true;
@@ -42,10 +42,7 @@
               statix.enable = true;
             };
 
-            # settings.markdownlint.config = {
-            #   MD034 = false;
-            #   MD013.line_length = 200;
-            # };
+            settings.markdownlint.config = { MD013.line_length = 100; };
 
             tools = pkgs;
 
@@ -55,7 +52,6 @@
         formatter = pkgs.nixfmt;
 
         devShells.default = mkShell.override { inherit stdenv; } {
-
           inherit (self.packages.${system}.default) CFLAGS nativeBuildInputs;
 
           shellHook = self.checks.${system}.pre-commit-check.shellHook + ''
@@ -69,10 +65,10 @@
         };
 
         packages.default = stdenv.mkDerivation {
-
           CFLAGS = "-O3" + lib.optionalString ("${system}" == "aarch64-darwin")
             " -mcpu=apple-m1";
 
+          name = "dyld-shared-cache-extractor";
           src = ./.;
 
           nativeBuildInputs = with pkgs; [ cmake ninja ];
