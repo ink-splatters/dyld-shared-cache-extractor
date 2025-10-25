@@ -52,13 +52,27 @@ dyld-shared-cache-extractor \
 
 ## Installation
 
-[Homebrew](https://brew.sh):
+## [Homebrew](https://brew.sh)
 
 ```sh
 brew install keith/formulae/dyld-shared-cache-extractor
 ```
 
-Manually:
+## [nix flake](https://wiki.nixos.org/wiki/Flakes)
+
+Build locally:
+
+```sh
+nix flake build
+```
+
+Install:
+
+```sh
+nix profile add github:ink-splatters/dyld-shared-cache-extractor
+```
+
+### Manually
 
 ```sh
 cmake -B build
@@ -71,11 +85,11 @@ cmake --install build
 There are a few different ways you can interact with these shared
 caches.
 
-1. Depending on what you're doing inspecting them in [Hopper][hopper] is
+1. Depending on what you're doing inspecting them in [Hopper] is
    the easiest option
-2. For a bit more functionality you can build the
+1. For a bit more functionality you can build the
    `dyld_shared_cache_util` target from the latest `dyld` [source
-   dump][dump], but this requires some [modifications][modifications]
+   dump][dump], but this requires some [modifications]
 
 The problem with the 2 options above is that they can lag behind format
 changes in the shared cache. This tool loads the private
