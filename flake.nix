@@ -31,31 +31,36 @@
         system,
         ...
       }: (let
-        inherit (pkgs) cmake ninja;
-
         inherit (pkgs.llvmPackages_latest) clang bintools stdenv;
-        commonAttrs = {
-          nativeBuildInputs = with pkgs; [
-            clang
-            bintools
-            cmake
-            ninja
-          ];
-        };
+        commonArgs = {
+          nativeBuildInputs = with pkgs;
+            [
+              meson
+              ninja
+            ]
+            ++ [
+              clang
+              bintools
+            ];
 
-        cmakeFlags = [
-          "CMAKE_C_FLAGS=-O3 -mcpu=native -pipe"
-          "CMAKE_EXE_LINKER_FLAGS=-fuse-ld=lld"
-        ];
+          CFLAGS = "-O3 -mcpu=native -pipe";
+          LDFLAGS = "-fuse-ld=lld";
+          NIX_ENFORCE_NO_NATIVE = 0;
+          hardeningDisable = ["all"];
+        };
       in {
-        devShells.default = pkgs.mkShell.override {inherit stdenv;} commonAttrs;
-        packages.default = stdenv.mkDerivation (commonAttrs
+        devShells.default = pkgs.mkShell.override {inherit stdenv;} commonArgs;
+        packages.default = stdenv.mkDerivation (commonArgs
           // rec {
-            name = "dyld-cache-extractor";
+            name = "dyld-shared-cache-extractor";
             src = builtins.path {
               inherit name;
               path = ./.;
             };
+            installPhase = ''
+              mkdir $out
+              mv ${name} $out/
+            '';
           });
         formatter = pkgs.alejandra;
       });
