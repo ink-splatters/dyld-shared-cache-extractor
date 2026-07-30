@@ -56,6 +56,9 @@
             name = "dyld-shared-cache-extractor";
           };
         };
+        version = lib.mkOption {
+          default = "20260730";
+        };
       };
     });
 }

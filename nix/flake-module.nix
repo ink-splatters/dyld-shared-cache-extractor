@@ -5,11 +5,11 @@ top: {
 
   perSystem = {config, ...}: {
     packages.dyld-shared-cache-extractor = config.stdenv.mkDerivation (finalAttrs: ({
-        name = "dyld-shared-cache-extractor";
-        inherit (top.config) src;
+        pname = "dyld-shared-cache-extractor";
+        inherit (top.config) src version;
         installPhase = ''
           mkdir $out
-          mv ${finalAttrs.name} $out/
+          mv ${finalAttrs.pname} $out/
         '';
       }
       // config.commonArgs));
